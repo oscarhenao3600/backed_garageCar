@@ -64,17 +64,16 @@ class LoginControllers(MethodView):
         auto = cursor.fetchone()
         conexion.close()  
         print("datos", auto)
-        if auto==None:
+        if auto == None:
             return jsonify({"Status": "usuario no registrado"}), 403
-        if (auto[1] == id):
-            if  bcrypt.checkpw(clave.encode('utf8'), auto[0].encode('utf8')):
-                encoded_jwt = jwt.encode(
-                    {'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=3600),
-                    'user':auto[2],
-                    'rol':auto[4]},  
-                    KEY_TOKEN_AUTH , algorithm='HS256')
-
-                return jsonify({"Status": "login exitoso","into": encoded_jwt,'Nuat':auto[2],'n3yB6PZnGE8n7F':auto[4],'doc':auto[5]}), 200
+        if (auto[4] == id):
+            if  bcrypt.checkpw(clave.encode('utf8'), auto[3].encode('utf8')):
+                # encoded_jwt = jwt.encode(
+                #     {'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=3600),
+                #     'user':auto[0],
+                #     'rol':auto[2]},  
+                #     KEY_TOKEN_AUTH , algorithm='HS256')
+                return jsonify({"Status": "login exitoso",'Nuat':auto[0],'rol':auto[2],'doc':auto[4]}), 200
             else:
                 return jsonify({"Status": "Clave incorrecta"}), 403
         return jsonify({"Status": "Clave incorrecta"}),403
@@ -82,13 +81,12 @@ class LoginControllers(MethodView):
 
 class RegisterControllers(MethodView):
     def post(self):
+        print('------')
         content = request.get_json()
         nombre = content.get("nombre_completo")
         telefono = content.get("telefono")
-        direccion = content.get("direccion")
-        ciudad = content.get("ciudad")
         rol= content.get("rol")
-        documento = rol= content.get("documento")
+        documento = content.get("documento")
         salt = bcrypt.gensalt()
         hash_password = bcrypt.hashpw(bytes(str(documento), encoding= 'utf-8'), salt)
         errors = create_register_schema.validate(content)
@@ -102,7 +100,7 @@ class RegisterControllers(MethodView):
         auto=cursor.fetchone()
         if auto==None:
             cursor.execute(
-                 "INSERT INTO users (nombre,telefono,direccion,ciudad,rol,clave,documento,clave) VALUES(%s,%s,%s,%s,%s,%s,%s,%s)", (nombre.capitalize(),telefono,direccion,ciudad.capitalize(),rol,documento,hash_password,documento,))
+                 "INSERT INTO users (nombre,telefono,rol,clave,documento) VALUES(%s,%s,%s,%s,%s)", (nombre,telefono,rol,hash_password,documento,))
             conexion.commit()
             conexion.close()
             return jsonify({"Status": "Bienvenido registro exitoso"}), 201

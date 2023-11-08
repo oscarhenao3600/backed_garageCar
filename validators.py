@@ -6,8 +6,6 @@ class CreateRegisterSchema(Schema):
 
     nombre      = fields.Str(required=True, validate=validate.Length(min=1, max=200))
     telefono    = fields.Str(required=True, validate=validate.Length(min=1, max=200))
-    direccion   = fields.Str(required=True, validate=validate.Length(min=1, max=100))
-    ciudad      = fields.Str(required=True, validate=validate.Length(min=1, max=100))
     rol         = fields.Str(required=True, validate=validate.Length(min=1, max=100))
     documento   = fields.Str(required=True, validate=validate.Length(min=6, max=50))
     
