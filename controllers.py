@@ -12,7 +12,7 @@ from flask import jsonify, request, session
 import hashlib
 import pymysql.cursors
 import bcrypt
-import jwt
+import jwt 
 from config import KEY_TOKEN_AUTH
 from config import HOST 
 from config import USER
@@ -53,7 +53,6 @@ class LoginControllers(MethodView):
         errors = create_login_schema.validate(content)
         if errors:
             return errors, 403
-        
         clave = content.get("password")
         id = content.get("id")
         conexion = crear_conexion()
@@ -67,13 +66,9 @@ class LoginControllers(MethodView):
         if auto == None:
             return jsonify({"Status": "usuario no registrado"}), 403
         if (auto[4] == id):
+            print('la clave del usuario es',auto[3])
             if  bcrypt.checkpw(clave.encode('utf8'), auto[3].encode('utf8')):
-                # encoded_jwt = jwt.encode(
-                #     {'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=3600),
-                #     'user':auto[0],
-                #     'rol':auto[2]},  
-                #     KEY_TOKEN_AUTH , algorithm='HS256')
-                return jsonify({"Status": "login exitoso",'Nuat':auto[0],'rol':auto[2],'doc':auto[4]}), 200
+                 return jsonify({"Status": "login exitoso"}), 200
             else:
                 return jsonify({"Status": "Clave incorrecta"}), 403
         return jsonify({"Status": "Clave incorrecta"}),403
@@ -81,7 +76,6 @@ class LoginControllers(MethodView):
 
 class RegisterControllers(MethodView):
     def post(self):
-        print('------')
         content = request.get_json()
         nombre = content.get("nombre_completo")
         telefono = content.get("telefono")
@@ -96,7 +90,7 @@ class RegisterControllers(MethodView):
         print(conexion)
         cursor = conexion.cursor()
         cursor.execute(
-            "SELECT nombre, clave FROM  users WHERE documento=%s", (documento, ))
+            "SELECT nombre, clave FROM  users WHERE documento=%s", (documento,))
         auto=cursor.fetchone()
         if auto==None:
             cursor.execute(
@@ -199,7 +193,7 @@ class RegisterControllers(MethodView):
 #         #consulta base de datos
 #         MONGO_HOST="jhtserverconnection.ddns.net"
 #         MONGO_PUERTO="39011"
-#         MONGO_TIEMPO_FUERA=1000
+#         MONGO_TIEMPO_FUERA=1000    
 #         MONGO_URI="mongodb://"+MONGO_HOST+":"+MONGO_PUERTO+"/"
 #         cliente=pymongo.MongoClient(MONGO_URI,serverSelectionTimeoutMS=MONGO_TIEMPO_FUERA)
 
